@@ -1,4 +1,4 @@
-const pressKey = (evt) => {
+const pressKeyEscape = (evt) => {
   if (evt.key === 'Escape') {
     const popup = document.querySelector('.popup_is-opened');
     closeModal(popup);
@@ -11,17 +11,17 @@ const togglePopup = (modal) => {
 
 export const openModal = (modal) => {
   togglePopup(modal);
-  document.addEventListener('keydown', pressKey);
+  document.addEventListener('keydown', pressKeyEscape);
 };
 
 export const closeModal = (modal) => {
   togglePopup(modal);
-  document.removeEventListener('keydown', pressKey);
+  document.removeEventListener('keydown', pressKeyEscape);
 };
 
 export const addListenerClosePopup = (modal) => {
-  const xButtonPopup = modal.querySelector('.popup__close');
-  xButtonPopup.addEventListener('click', () => {
+  const popupCloseButton = modal.querySelector('.popup__close');
+  popupCloseButton.addEventListener('click', () => {
     togglePopup(modal);
   });
   modal.addEventListener('mousedown', (evt) => {

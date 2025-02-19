@@ -1,9 +1,8 @@
 import '../pages/index.css';
-import { initialCards, createCard, deleteCard, likeCard } from './cards.js';
+import { createCard, deleteCard, likeCard } from './card.js';
 import { openModal, closeModal, addListenerClosePopup } from './modal.js';
 
-const cardTemplate = document.querySelector('#card-template').content;
-const cardContainer = document.querySelector('.places__list');
+const cardList = document.querySelector('.places__list');
 
 const profileEditButton = document.querySelector('.profile__edit-button');
 const newCardButton = document.querySelector('.profile__add-button');
@@ -21,14 +20,53 @@ const formEditProfile = document.forms['edit-profile'];
 const nameInput = formEditProfile.elements.name;
 const jobInput = formEditProfile.elements.description;
 
+const initialCards = [
+  {
+    name: 'Архыз',
+    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg',
+  },
+  {
+    name: 'Челябинская область',
+    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/chelyabinsk-oblast.jpg',
+  },
+  {
+    name: 'Иваново',
+    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/ivanovo.jpg',
+  },
+  {
+    name: 'Камчатка',
+    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kamchatka.jpg',
+  },
+  {
+    name: 'Холмогорский район',
+    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kholmogorsky-rayon.jpg',
+  },
+  {
+    name: 'Байкал',
+    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg',
+  },
+];
+
+const getTemplate = () => {
+  return document.querySelector("#card-template").content;
+}; 
+
+const cardTemplate = getTemplate();
+
+const createCardOptions = {
+  cardTemplate: cardTemplate,
+  deleteCard: deleteCard,
+  likeCard: likeCard,
+  expandCard: expandCard,
+};
+
 initialCards.forEach((item) => {
-  cardContainer.append(
-    createCard(item, cardTemplate, deleteCard, likeCard, expandCard)
-  );
+  cardList.append(createCard(item, createCardOptions));
 });
 
 function expandCard(cardImage, cardTitle) {
   openCardPopupImg.src = cardImage.src;
+  openCardPopupImg.alt = `Фотография места: ${cardTitle.textContent}`;
   openCardPopupCaption.textContent = cardTitle.textContent;
   openModal(openCardPopup);
 }
@@ -60,15 +98,7 @@ profileEditButton.addEventListener('click', () => {
 formEditProfile.addEventListener('submit', submitProfileEdit);
 
 function addCard(newCard) {
-  cardContainer.prepend(
-    createCard(newCard, cardTemplate, deleteCard, likeCard, expandCard)
-  );
-  closeModal(newCardPopup);
-}
-
-function cleanNewCardForm(nameInput, linkInput) {
-  nameInput.value = '';
-  linkInput.value = '';
+  cardList.prepend(createCard(newCard, createCardOptions));
 }
 
 newCardButton.addEventListener('click', () => {
@@ -84,7 +114,8 @@ function submitNewCard(evt) {
     link: linkInput.value,
   };
   addCard(newCard);
-  cleanNewCardForm(nameInput, linkInput);
+  closeModal(newCardPopup);
+  formNewPlace.reset();
 }
 
 formNewPlace.addEventListener('submit', submitNewCard);
