@@ -26,13 +26,6 @@ const hideInputError = (
 const getValidationMessage = (inputElement) => {
   if (inputElement.validity.patternMismatch) {
     inputElement.setCustomValidity(inputElement.dataset.errorMessage);
-  } else if (inputElement.validity.valueMissing) {
-    inputElement.setCustomValidity("Вы пропустили это поле.");
-  } else if (
-    inputElement.validity.typeMismatch &&
-    inputElement.type === "url"
-  ) {
-    inputElement.setCustomValidity("Введите адрес сайта.");
   } else {
     inputElement.setCustomValidity("");
   }
@@ -44,8 +37,8 @@ const checkInputValidity = (
   inputErrorClass,
   errorClass
 ) => {
+  getValidationMessage(inputElement);
   if (!inputElement.validity.valid) {
-    getValidationMessage(inputElement);
     showInputError(
       formElement,
       inputElement,
@@ -93,8 +86,6 @@ const setEventListeners = (
   const inputList = Array.from(formElement.querySelectorAll(inputSelector));
   const buttonElement = formElement.querySelector(submitButtonSelector);
 
-  toggleButtonState(inputList, buttonElement, inactiveButtonClass);
-
   inputList.forEach((inputElement) => {
     inputElement.addEventListener("input", function () {
       checkInputValidity(
@@ -114,7 +105,7 @@ export const enableValidation = ({
   submitButtonSelector,
   inactiveButtonClass,
   inputErrorClass,
-  errorClass
+  errorClass,
 }) => {
   const formList = Array.from(document.querySelectorAll(formSelector));
   formList.forEach((formElement) => {

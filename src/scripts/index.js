@@ -15,8 +15,6 @@ const cardList = document.querySelector(".places__list");
 const profileEditButton = document.querySelector(".profile__edit-button");
 const newCardButton = document.querySelector(".profile__add-button");
 
-const savePopupButton = document.querySelector(".popup__button");
-
 const profileEditPopup = document.querySelector(".popup_type_edit");
 const newCardPopup = document.querySelector(".popup_type_new-card");
 const openCardPopup = document.querySelector(".popup_type_image");
@@ -59,7 +57,7 @@ const fillProfile = (userData) => {
   userId = userData._id;
 };
 
-const fillInitioalCards = (cardsData) => {
+const fillInitialCards = (cardsData) => {
   cardsData.forEach((item) => {
     cardList.append(createCard(item, createCardOptions, userId));
   });
@@ -68,7 +66,7 @@ const fillInitioalCards = (cardsData) => {
 Promise.all([getUser(), getInitialCards()])
   .then(([userData, cardsData]) => {
     fillProfile(userData);
-    fillInitioalCards(cardsData);
+    fillInitialCards(cardsData);
   })
   .catch((err) => {
     console.log(err);
@@ -91,7 +89,7 @@ const createCardOptions = {
 
 // Уведомление о процессе загрузки
 
-function renderLoading(isLoading) {
+function renderLoading(isLoading, savePopupButton) {
   if (isLoading) {
     savePopupButton.textContent = "Сохранение...";
   } else {
@@ -131,22 +129,21 @@ function editProfile(name, job) {
 
 function submitProfileEdit(evt) {
   evt.preventDefault();
-  renderLoading(true);
-  editProfile(nameInput.value, jobInput.value);
+
+  const savePopupButton = formEditProfile.elements["button-edit-profile"];
+  renderLoading(true, savePopupButton);
+
   editProfileOnServer(nameInput.value, jobInput.value)
-  .then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    .then(() => {
+      editProfile(nameInput.value, jobInput.value);
+      closeModal(profileEditPopup);
     })
-  .catch((err) => {
-    console.log(err);
-  })
-  .finally(() => {
-    renderLoading(false);
-  });
-  closeModal(profileEditPopup);
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      renderLoading(false, savePopupButton);
+    });
 }
 
 profileEditButton.addEventListener("click", () => {
@@ -164,12 +161,17 @@ function addCard(newCard) {
 }
 
 newCardButton.addEventListener("click", () => {
+  formNewPlace.reset();
+  clearValidation(formNewPlace, validationOptions);
   openModal(newCardPopup);
 });
 
 function submitNewCard(evt) {
   evt.preventDefault();
-  renderLoading(true);
+
+  const savePopupButton = formNewPlace.elements["button-new-card"];
+  renderLoading(true, savePopupButton);
+
   const nameInput = formNewPlace.elements["place-name"];
   const linkInput = formNewPlace.elements.link;
   const newCard = {
@@ -178,23 +180,16 @@ function submitNewCard(evt) {
   };
   addCardToServer(newCard)
     .then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .then((res) => {
       addCard(res);
+      closeModal(newCardPopup);
+      formNewPlace.reset();
     })
     .catch((err) => {
       console.log(err);
     })
     .finally(() => {
-      renderLoading(false);
+      renderLoading(false, savePopupButton);
     });
-  closeModal(newCardPopup);
-  formNewPlace.reset();
-  clearValidation(formNewPlace, validationOptions);
 }
 
 formNewPlace.addEventListener("submit", submitNewCard);
@@ -211,25 +206,23 @@ function editAvatar(linkInput) {
 
 function submitEditAvatar(evt) {
   evt.preventDefault();
-  renderLoading(true);
+
+  const savePopupButton = formEditAvatar.elements["button-edit-avatar"];
+  renderLoading(true, savePopupButton);
+
   const linkInput = formEditAvatar.elements.link;
-  editAvatar(linkInput);
   editAvatarOnServer(linkInput.value)
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
+    .then(() => {
+      editAvatar(linkInput);
+      closeModal(editAvatarPopup);
+      formEditAvatar.reset();
     })
     .catch((err) => {
       console.log(err);
     })
     .finally(() => {
-      renderLoading(false);
+      renderLoading(false, savePopupButton);
     });
-  closeModal(editAvatarPopup);
-  formEditAvatar.reset();
-  clearValidation(formEditAvatar, validationOptions);
 }
 
 formEditAvatar.addEventListener("submit", submitEditAvatar);
