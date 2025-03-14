@@ -8,6 +8,7 @@
   cursor: pointer;
   padding: 0;
   margin: 0;
+  margin-bottom: 3px;
   -webkit-transition: 0.3s;
   -moz-transition: 0.3s;
   -ms-transition: 0.3s;
@@ -17,4 +18,16 @@
 
 .card__like-button:hover {
   opacity: 0.6;
+}
+
+.card__likes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.likes-counter {
+  font-weight: 400;
+  font-size: 13px;
+  color: #000;
 }
