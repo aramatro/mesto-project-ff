@@ -197,6 +197,8 @@ formNewPlace.addEventListener("submit", submitNewCard);
 // Изменение аватарки профиля
 
 profileImage.addEventListener("click", () => {
+  formEditAvatar.reset();
+  clearValidation(formEditAvatar, validationOptions);
   openModal(editAvatarPopup);
 });
 
